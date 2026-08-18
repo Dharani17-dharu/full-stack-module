@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            color: #444;
+            margin-top: 25px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .box {
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            background: #f1f3f5;
+        }
+
+        .box h3 {
+            margin: 5px;
+        }
+
+        .income {
+            color: green;
+        }
+
+        .expense {
+            color: red;
+        }
+
+        .saving {
+            color: blue;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #333;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            padding: 6px;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Personal Expense Calculator</h1>
+
+    <h2>Income</h2>
+
+    <input type="number" id="income" placeholder="Enter your income">
+
+    <h2>Add Expense</h2>
+
+    <input type="text" id="expenseName" placeholder="Expense name">
+
+    <input type="number" id="expenseAmount" placeholder="Expense amount">
+
+    <select id="category">
+        <option value="Food">Food</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Education">Education</option>
+        <option value="Others">Others</option>
+    </select>
+
+    <button onclick="addExpense()">Add Expense</button>
+
+    <h2>Summary</h2>
+
+    <div class="summary">
+
+        <div class="box">
+            <h3>Income</h3>
+            <p class="income">₹<span id="totalIncome">0</span></p>
+        </div>
+
+        <div class="box">
+            <h3>Expenses</h3>
+            <p class="expense">₹<span id="totalExpense">0</span></p>
+        </div>
+
+        <div class="box">
+            <h3>Savings</h3>
+            <p class="saving">₹<span id="savings">0</span></p>
+        </div>
+
+    </div>
+
+    <h2>Expense Details</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Expense</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="expenseTable">
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+
+    let expenses = [];
+
+    function addExpense() {
+
+        let name = document.getElementById("expenseName").value;
+        let amount = Number(document.getElementById("expenseAmount").value);
+        let category = document.getElementById("category").value;
+
+        if (name === "" || amount <= 0) {
+            alert("Please enter valid expense details!");
+            return;
+        }
+
+        expenses.push({
+            name: name,
+            amount: amount,
+            category: category
+        });
+
+        document.getElementById("expenseName").value = "";
+        document.getElementById("expenseAmount").value = "";
+
+        displayExpenses();
+        calculateSummary();
+    }
+
+    function displayExpenses() {
+
+        let table = document.getElementById("expenseTable");
+
+        table.innerHTML = "";
+
+        expenses.forEach(function(expense, index) {
+
+            let row = `
+                <tr>
+                    <td>${expense.name}</td>
+                    <td>${expense.category}</td>
+                    <td>₹${expense.amount}</td>
+                    <td>
+                        <button class="delete-btn"
+                            onclick="deleteExpense(${index})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            table.innerHTML += row;
+        });
+    }
+
+    function deleteExpense(index) {
+
+        expenses.splice(index, 1);
+
+        displayExpenses();
+        calculateSummary();
+    }
+
+    function calculateSummary() {
+
+        let income = Number(document.getElementById("income").value);
+
+        let totalExpense = 0;
+
+        expenses.forEach(function(expense) {
+            totalExpense += expense.amount;
+        });
+
+        let savings = income - totalExpense;
+
+        document.getElementById("totalIncome").textContent = income;
+        document.getElementById("totalExpense").textContent = totalExpense;
+        document.getElementById("savings").textContent = savings;
+    }
+
+    document.getElementById("income").addEventListener("input", calculateSummary);
+
+</script>
+
+</body>
+</html>
