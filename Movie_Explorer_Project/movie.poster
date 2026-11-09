@@ -1,0 +1,27 @@
+import { useState } from 'react'
+
+export default function MoviePoster({ src, title, category, year, className = '', eager = false }) {
+  const [failedSource, setFailedSource] = useState('')
+  const hasPoster = src && failedSource !== src
+
+  if (hasPoster) {
+    return (
+      <img
+        className={`poster-image ${className}`}
+        src={src}
+        alt={`${title} poster`}
+        loading={eager ? 'eager' : 'lazy'}
+        referrerPolicy="no-referrer"
+        onError={() => setFailedSource(src)}
+      />
+    )
+  }
+
+  return (
+    <div className={`poster-empty ${className}`} role="img" aria-label={`${title} poster unavailable`}>
+      <span>POSTER UNAVAILABLE</span>
+      <strong>{title}</strong>
+      <small>{category} {year !== 'Year unknown' ? `· ${year}` : ''}</small>
+    </div>
+  )
+}
